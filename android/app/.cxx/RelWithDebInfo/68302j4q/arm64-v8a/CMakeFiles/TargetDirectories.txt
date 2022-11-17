@@ -1,0 +1,3 @@
+C:/Users/mahmo/StudioProjects/pos_test/android/app/.cxx/RelWithDebInfo/68302j4q/arm64-v8a/CMakeFiles/pos_test.dir
+C:/Users/mahmo/StudioProjects/pos_test/android/app/.cxx/RelWithDebInfo/68302j4q/arm64-v8a/CMakeFiles/edit_cache.dir
+C:/Users/mahmo/StudioProjects/pos_test/android/app/.cxx/RelWithDebInfo/68302j4q/arm64-v8a/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,4 @@
+# ninja log v5
+0	531	690212780	CMakeFiles/pos_test.dir/pos_test.cpp.o	9f99b1dcd09c942a
+531	597	690212780	C:/Users/mahmo/StudioProjects/pos_test/build/app/intermediates/cxx/RelWithDebInfo/68302j4q/obj/arm64-v8a/libpos_test.so	bd41e68bce6a55c
+0	93	690215392	C:/Users/mahmo/StudioProjects/pos_test/build/app/intermediates/cxx/RelWithDebInfo/68302j4q/obj/arm64-v8a/libpos_test.so	bd41e68bce6a55c

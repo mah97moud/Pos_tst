@@ -1,0 +1,7 @@
+Executable : C:\Users\mahmo\AppData\Local\Android\sdk\cmake\3.18.1\bin\ninja.exe
+arguments : 
+-C
+C:\Users\mahmo\StudioProjects\pos_test\android\app\.cxx\Debug\4n2k4x67\x86
+pos_test
+jvmArgs : 
+

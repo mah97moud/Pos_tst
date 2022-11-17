@@ -1,0 +1,2 @@
+ninja: Entering directory `C:\Users\mahmo\StudioProjects\pos_test\android\app\.cxx\RelWithDebInfo\68302j4q\arm64-v8a'
+ninja: no work to do.

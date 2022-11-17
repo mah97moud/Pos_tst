@@ -1,0 +1,3 @@
+C:/Users/mahmo/StudioProjects/pos_test/android/app/.cxx/Debug/4n2k4x67/x86_64/CMakeFiles/pos_test.dir
+C:/Users/mahmo/StudioProjects/pos_test/android/app/.cxx/Debug/4n2k4x67/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/mahmo/StudioProjects/pos_test/android/app/.cxx/Debug/4n2k4x67/x86_64/CMakeFiles/rebuild_cache.dir
