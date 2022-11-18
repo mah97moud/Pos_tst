@@ -5,8 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:pos_test/print_manager.dart';
 import 'package:path_provider/path_provider.dart';
 
-import 'pdf/simple_pdf.dart';
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
@@ -75,6 +73,12 @@ class _HomePageState extends State<HomePage> {
               },
               child: const Icon(Icons.print_rounded),
             ),
+            // ElevatedButton(
+            //   onPressed: () {
+            //     PrinterManager.printTRows();
+            //   },
+            //   child: const Icon(Icons.list),
+            // ),
             // ElevatedButton(
             //   onPressed: () async {
             //     imgbuffer = await PdfInvoiceSimpleAPI.pdfFile();

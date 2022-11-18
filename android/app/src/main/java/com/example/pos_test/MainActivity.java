@@ -22,6 +22,7 @@ import com.telpo.tps550.api.printer.UsbThermalPrinter;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.embedding.engine.FlutterEngine;
@@ -88,46 +89,99 @@ public class MainActivity extends FlutterActivity {
                 .setMethodCallHandler(
                         (call, result) -> {
                             // This method is invoked on the main thread.
-//                            String filePath = call.argument(PrinterStrings.imgPathArg);
-                         final String printFullInvoice = call.argument(PrinterStrings.printFullInvoice);
+                            if(call.method.equals(PrinterStrings.printFullInvoice)){
+                                result.success("Success");
+                                try {
+                                    usbThermalPrinter.start(1);
+                                } catch (TelpoException e) {
+                                    e.printStackTrace();
+                                }
+                                String title = call.argument(PrinterStrings.title);
+                                String invoiceNumber = call.argument(PrinterStrings.invoiceNumber);
+                                String date = "";
+                                String companyName = call.argument(PrinterStrings.companyName);
+                                String address = call.argument(PrinterStrings.address);
+                                String space = "  ";
+                                String barcode = call.argument(PrinterStrings.barCode);
+                                String qrcode = call.argument(PrinterStrings.qrCode);
+                                final List list = call.argument(PrinterStrings.list);
+                                assert list != null;
+//                                for (int row = 0; row < list.size(); row++) {
+//                                    List f =(List) list.get(row);
+//                                    System.out.println(f.get(0));
+//                                    System.out.println(f.get(1));
+//                                    System.out.println(f.get(2));
+//                                    System.out.println(f.get(3));
+//                                }
+                                new Thread(() -> {
+                                    if (LowBattery) {
+                                        handler.sendMessage(handler.obtainMessage(LOWBATTERY, 1, 0, null));
+                                    } else {
+                                        try {
+                                            usbThermalPrinter.reset();
+                                            usbThermalPrinter.setMonoSpace(true);
+                                            usbThermalPrinter.setGray(7);
+                                            usbThermalPrinter.setAlgin(UsbThermalPrinter.ALGIN_MIDDLE);
+//                                            Bitmap bitmap1= BitmapFactory.decodeResource(MainActivity.this.getResources(),R.mipmap.telpoe);
+//                                            Bitmap bitmap2 = ThumbnailUtils.extractThumbnail(bitmap1, 244, 116);
+//                                            usbThermalPrinter.printLogo(bitmap2,true);
+                                            usbThermalPrinter.setTextSize(30);
+                                            usbThermalPrinter.addString(title +"\n");
+                                            usbThermalPrinter.setTextSize(24);
+                                            usbThermalPrinter.addString( invoiceNumber);
+                                            usbThermalPrinter.addString( companyName);
+                                            usbThermalPrinter.addString(address);
+                                            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                                            Date curDate = new Date(System.currentTimeMillis());//获取当前时间
+                                            String str = formatter.format(curDate);
+                                            usbThermalPrinter.addString(str);
+                                            int i1 = usbThermalPrinter.measureText(" ");
+                                            int SpaceNumber=((384)/i1);
+                                            StringBuilder spaceString = new StringBuilder();
+                                            for (int j=0;j<SpaceNumber;j++){
+                                                spaceString.append("_");
+                                            }
+                                            usbThermalPrinter.addString(String.valueOf(spaceString));
+                                            usbThermalPrinter.setAlgin(UsbThermalPrinter.ALGIN_LEFT);
+                                            tableHead();
+                                            usbThermalPrinter.walkPaper(10);
+                                            usbThermalPrinter.setAlgin(UsbThermalPrinter.ALGIN_MIDDLE);
+                                            for (int row = 0; row < list.size(); row++) {
+                                                List f =(List) list.get(row);
+                                                int i = usbThermalPrinter.measureText((String) f.get(0) + f.get(1) + f.get(2) + f.get(3));
 
-                            try {
-                                usbThermalPrinter.start(1);
-                            } catch (TelpoException e) {
-                                e.printStackTrace();
+                                                int SpaceInRow = ((384 - i) / i1) / 4;
+                                                StringBuilder spaceInRow = new StringBuilder();
+                                                for (int j = 0; j < SpaceInRow; j++) {
+                                                    spaceInRow.append(" ");
+                                                }
+
+                                                usbThermalPrinter.addString((String)f.get(0) + spaceInRow + f.get(1) + spaceInRow + f.get(2) + spaceInRow + f.get(3));
+
+                                                usbThermalPrinter.addString(String.valueOf(spaceInRow));
+                                            }
+                                            usbThermalPrinter.addString(String.valueOf(spaceString));
+                                            qrCode(qrcode);
+                                            usbThermalPrinter.printString();
+                                            usbThermalPrinter.walkPaper(10);
+                                        } catch (TelpoException e) {
+                                            e.printStackTrace();
+                                            Result = e.toString();
+                                            if (Result.equals("com.telpo.tps550.api.printer.NoPaperException")) {
+                                                handler.sendMessage(handler.obtainMessage(NOPAPER, 1, 0, null));
+                                            } else if (Result.equals("com.telpo.tps550.api.printer.OverHeatException")) {
+                                                handler.sendMessage(handler.obtainMessage(OVERHEAT, 1, 0, null));
+                                            }
+                                        }
+                                    }
+                                }).start();
+                            }else {
+                                result.notImplemented();
                             }
-                            String title = call.argument("title");
-                            String invoiceNumber = call.argument("invoiceNumber");
-                            String date = "";
-                            String companyName = call.argument("companyName");
-                            String address = call.argument("address");
-                            String space = "  ";
-                            String barcode = call.argument("barCode");
-                            String qrcode = call.argument("qrCode");
-                            printInvoice(title,invoiceNumber,companyName,address,qrcode);
-
-//
-//                            if(call.method.equals(PrinterStrings.printImage)){
-//
-
-//                                printImg(path);
-//                            }
-//
-//                            if(call.method.equals(PrinterStrings.printTHead)){
-//                                tableHead();
-//                            }
-//
-//                            if(call.method.equals(PrinterStrings.printRow)){
-//                                String item = call.argument(PrinterStrings.item);
-//                                String quantity = call.argument(PrinterStrings.quantity);
-//                                String price = call.argument(PrinterStrings.price);
-//                                String total = call.argument(PrinterStrings.total);
-//                                printRow(item,quantity,price,total);
-//                            }
-
                         }
                 );
     }
+
 
 
     public  void printImg(String path) {
@@ -160,7 +214,8 @@ public class MainActivity extends FlutterActivity {
         }).start();
     }
 
-    public  void printInvoice(String title, String invoiceNumber, String companyName, String address, String qrcode){
+    public  void printInvoice(String title, String invoiceNumber,
+                              String companyName, String address, String qrcode,List listOfItem){
         new Thread(() -> {
             if (LowBattery) {
                 handler.sendMessage(handler.obtainMessage(LOWBATTERY, 1, 0, null));
@@ -190,11 +245,18 @@ public class MainActivity extends FlutterActivity {
                         spaceString.append("_");
                     }
                     usbThermalPrinter.addString(String.valueOf(spaceString));
+                    usbThermalPrinter.setAlgin(UsbThermalPrinter.ALGIN_LEFT);
                     tableHead();
                     usbThermalPrinter.walkPaper(10);
-                    printRow("pc100","500","50","25000");
-                    printRow("printer 1","50","10","500");
-                    printRow("pc1000","5000","50","250000");
+                    usbThermalPrinter.setAlgin(UsbThermalPrinter.ALGIN_MIDDLE);
+                    for (Object list : listOfItem) {
+                        System.out.println(list);
+                       final List l =  (List) list;
+                        this.printRow((String) l.get(0),(String) l.get(1),(String) l.get(2),(String) l.get(3));
+                        usbThermalPrinter.addString(String.valueOf(spaceString));
+                        System.out.println(l.get(0).getClass().getName());
+                    }
+//                    iterateUsingForEach(listOfItem,usbThermalPrinter,spaceString);
                     usbThermalPrinter.addString(String.valueOf(spaceString));
                     qrCode(qrcode);
                     usbThermalPrinter.printString();
@@ -244,7 +306,6 @@ public class MainActivity extends FlutterActivity {
             if (LowBattery) {
                 handler.sendMessage(handler.obtainMessage(LOWBATTERY, 1, 0, null));
             } else {
-
 
                 try {
                     Bitmap bitmap = CreateCode(qrCode, BarcodeFormat.QR_CODE, 400, 400);
@@ -310,10 +371,8 @@ public class MainActivity extends FlutterActivity {
                         spaceString.append(" ");
                     }
 
-
                     usbThermalPrinter.addString(item+spaceString+quantity+spaceString+price+spaceString+total);
 
-                    usbThermalPrinter.walkPaper(15);
                 } catch (TelpoException e) {
                     e.printStackTrace();
                     Result = e.toString();
@@ -361,19 +420,23 @@ public class MainActivity extends FlutterActivity {
 }
 
 
+
 class PrinterStrings {
     //channel name
     static String channel = "android.flutter/printer";
 
     //commands
-    static String printImage = "printImage";
+//    static String printImage = "printImage";
     static String printFullInvoice = "printFullInvoice";
-    static String printTHead = "printTHead";
-    static String printRow = "printRow";
-    static String imgPathArg = "img_path";
     //row Elements
-    static String item = "item";
-    static String quantity ="quantity";
-    static String price = "price";
-    static String total = "total";
+    static String list = "list";
+
+    //header elements
+    static String title = "title";
+    static String invoiceNumber = "invoiceNumber";
+    static String companyName = "companyName";
+    static String address = "address";
+    static String barCode = "barCode";
+    static String qrCode = "qrCode";
 }
+
